@@ -57,7 +57,7 @@ module.exports = {
     }
 
     // フォーラムチャンネルを取得
-    const NEWS_FORUM_CHANNEL_ID = "1418948605439381615";
+    const NEWS_FORUM_CHANNEL_ID = require(".././channel-id.json").newsForum;
     const forumChannel = await interaction.client.channels.fetch(NEWS_FORUM_CHANNEL_ID);
 
     try {
