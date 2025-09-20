@@ -1,36 +1,3 @@
 {
-  "soundboard": [
-    {
-      "label":"coin1",
-      "path":"coin001.mp3"
-    },
-    {
-      "label":"coin2",
-      "path":"coin002.mp3"
-    },
-    {
-      "label":"coin3",
-      "path":"coin003.mp3"
-    },
-    {
-      "label":"coin4",
-      "path":"coin004.mp3"
-    },
-    {
-      "label":"SE1",
-      "path":"game-effect001.mp3"
-    },
-    {
-      "label":"SE2",
-      "path":"game-effect002.mp3"
-    },
-    {
-      "label":"SE3",
-      "path":"game-effect003.mp3"
-    },
-    {
-      "label":"SE4",
-      "path":"game-effect004.mp3"
-    }
-  ]
+  "soundboard": []
 }

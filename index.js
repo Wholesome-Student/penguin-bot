@@ -30,11 +30,6 @@ client.on("ready", () => {
   console.log(`${client.user.tag}起動完了`);
 });
 
-client.on("messageCreate", (message) => {
-  if (message.author.bot) return;
-  message.channel.send(message.content);
-});
-
 client.on("interactionCreate", async (interaction) => {
   if (interaction.isChatInputCommand()) {
     const command = interaction.client.commands.get(interaction.commandName);
