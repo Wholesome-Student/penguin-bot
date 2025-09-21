@@ -1,5 +1,7 @@
 const { Client, GatewayIntentBits, Collection } = require("discord.js");
 const { playSound, leaveVC } = require("./libs/playSound.js");
+const { sendArticle } = require("./libs/sendArticle.js");
+const cron = require("node-cron");
 
 const client = new Client({
   intents: [
@@ -54,6 +56,10 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
       leaveVC();
     }
   }
+});
+
+cron.schedule("0 0 * * * *", async () => {
+  await sendArticle(client);
 });
 
 client.login(token);
