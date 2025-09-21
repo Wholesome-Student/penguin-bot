@@ -45,7 +45,7 @@ async function fetchQiitaArticles(token) {
   return enrichedArticles.filter((article) => article?.likesCount > 0);
 }
 
-async function readHisotry() {
+async function readHistory() {
   try {
     const data = await fsPromises.readFile(HISTORY_FILE_PATH, "utf8");
     return JSON.parse(data);
@@ -73,7 +73,7 @@ async function sendArticle(client) {
   const [thread, allArticles, fullHistory] = await Promise.all([
     client.channels.fetch(ARTICLE_THREAD_ID),
     fetchQiitaArticles(tokenQiita),
-    readHisotry(),
+    readHistory(),
   ]);
   if (!thread?.isThread()) {
     console.error("スレッド読み込みに失敗");
@@ -82,7 +82,7 @@ async function sendArticle(client) {
   const cutoffDate = new Date();
   cutoffDate.setDate(cutoffDate.getDate() - HISTORY_REMAIN_DAYS);
   const recentHistory = fullHistory.filter((entry) => new Date(entry.pickedAt) >= cutoffDate);
-  if (readHisotry.length < fullHistory.length) {
+  if (readHistory.length < fullHistory.length) {
     console.log(`${fullHistory.length - recentHistory.length}件の古い履歴を削除`);
   }
   const recentHistoryIds = new Set(recentHistory.map((entry) => entry.articleId));
