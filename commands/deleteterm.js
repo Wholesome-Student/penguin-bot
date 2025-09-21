@@ -57,7 +57,10 @@ module.exports = {
         .setTimestamp();
       await interaction.reply({ embeds: [embed] });
     } else {
-      await interaction.reply(`用語「**${term}**」は見つかりませんでした。`);
+      await interaction.reply({
+        content: `用語「**${term}**」は見つかりませんでした。`,
+        ephemeral: true,
+      });
     }
   },
 };
