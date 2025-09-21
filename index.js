@@ -34,6 +34,10 @@ client.on("interactionCreate", async (interaction) => {
   if (interaction.isChatInputCommand()) {
     const command = interaction.client.commands.get(interaction.commandName);
     await command.execute(interaction);
+  } else if (interaction.isAutocomplete()) {
+    const command = interaction.client.commands.get(interaction.commandName);
+    if (!command) return;
+    await command.autocomplete(interaction);
   } else if (interaction.isMessageComponent()) {
     const [commandName, _] = interaction.customId.split(":");
     const command = interaction.client.components.get(commandName);
