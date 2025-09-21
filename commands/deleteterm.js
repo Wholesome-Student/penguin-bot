@@ -52,7 +52,7 @@ module.exports = {
       fs.writeFileSync(dictionaryPath, JSON.stringify(dictionary, null, 2), "utf8");
       const embed = new EmbedBuilder()
         .setColor(0xef1010)
-        .setTitle(`削除しました`)
+        .setTitle("削除しました")
         .setDescription(`用語「**${term}**」を辞書から削除しました。`)
         .setTimestamp();
       await interaction.reply({ embeds: [embed] });
