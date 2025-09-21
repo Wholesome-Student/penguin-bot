@@ -6,12 +6,14 @@ const { selectWeightedRandom } = require("./selectWeightedRandom");
 const ARTICLE_THREAD_ID = require("../channel-id.json").articleThread;
 const QIITA_POPULAR_FEED_URL = "https://qiita.com/popular-items/feed.atom";
 const QIITA_API_BASE_URL = "https://qiita.com/api/v2/items/";
+const ZENN_POPULAR_FEED_URL = "https://zenn.dev/feed";
+const ZENN_API_BASE_URL = "https://zenn.dev/api/";
 const HISTORY_FILE_PATH = "./article-history.json";
 const HISTORY_REMAIN_DAYS = 30;
 
 const parser = new Parser();
 
-async function enrichArticleWithDetails(article, token) {
+async function enrichQiitaArticleWithDetails(article, token) {
   try {
     const urlParts = new URL(article.link).pathname.split("/");
     const itemIndex = urlParts.indexOf("items");
@@ -40,7 +42,48 @@ async function enrichArticleWithDetails(article, token) {
 
 async function fetchQiitaArticles(token) {
   const feed = await parser.parseURL(QIITA_POPULAR_FEED_URL);
-  const enrichmentPromises = feed.items.map((article) => enrichArticleWithDetails(article, token));
+  const enrichmentPromises = feed.items.map((article) =>
+    enrichQiitaArticleWithDetails(article, token),
+  );
+  const enrichedArticles = await Promise.all(enrichmentPromises);
+  return enrichedArticles.filter((article) => article?.likesCount > 0);
+}
+
+async function enrichZennArticleWithDetails(article) {
+  try {
+    const urlParts = new URL(article.link).pathname.split("/");
+    const type = urlParts.slice(-2)[0];
+    const articleId = urlParts.slice(-2).join("/");
+    if (!articleId) {
+      throw new Error("記事IDが見つかりませんでした。");
+    }
+    const apiUrl = `${ZENN_API_BASE_URL}${articleId}`;
+    const response = await fetch(apiUrl);
+    if (!response.ok) {
+      throw new Error(`APIリクエストに失敗: ${response.status}`);
+    }
+    const data = await response.json();
+    const liked_count =
+      type === "articles"
+        ? data.article.liked_count
+        : type == "books"
+        ? data.book.liked_count
+        : null;
+    if (!liked_count) return;
+    return {
+      ...article,
+      articleId: articleId,
+      likesCount: liked_count,
+    };
+  } catch (error) {
+    console.error(`記事情報の取得に失敗: ${article.title}`);
+    return null;
+  }
+}
+
+async function fetchZennArticles() {
+  const feed = await parser.parseURL(ZENN_POPULAR_FEED_URL);
+  const enrichmentPromises = feed.items.map((article) => enrichZennArticleWithDetails(article));
   const enrichedArticles = await Promise.all(enrichmentPromises);
   return enrichedArticles.filter((article) => article?.likesCount > 0);
 }
@@ -70,11 +113,13 @@ async function writeHistory(history) {
 
 async function sendArticle(client) {
   console.log("記事の抽選と投稿処理を開始");
-  const [thread, allArticles, fullHistory] = await Promise.all([
+  const [thread, qiitaArticles, zennArticles, fullHistory] = await Promise.all([
     client.channels.fetch(ARTICLE_THREAD_ID),
     fetchQiitaArticles(tokenQiita),
+    fetchZennArticles(),
     readHistory(),
   ]);
+  const allArticles = [...qiitaArticles, ...zennArticles];
   if (!thread?.isThread()) {
     console.error("スレッド読み込みに失敗");
     return;
