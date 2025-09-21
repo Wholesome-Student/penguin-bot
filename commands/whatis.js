@@ -42,7 +42,7 @@ module.exports = {
     if (Object.keys(dictionary).length === 0) {
       await interaction.reply({
         content: "まだ辞書に何も登録されていません。",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       return;
     }
@@ -57,7 +57,7 @@ module.exports = {
     } else {
       await interaction.reply({
         content: `用語「**${term}**」は見つかりませんでした。`,
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
     }
   },
