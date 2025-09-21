@@ -82,7 +82,7 @@ async function sendArticle(client) {
   const cutoffDate = new Date();
   cutoffDate.setDate(cutoffDate.getDate() - HISTORY_REMAIN_DAYS);
   const recentHistory = fullHistory.filter((entry) => new Date(entry.pickedAt) >= cutoffDate);
-  if (readHistory.length < fullHistory.length) {
+  if (recentHistory.length < fullHistory.length) {
     console.log(`${fullHistory.length - recentHistory.length}件の古い履歴を削除`);
   }
   const recentHistoryIds = new Set(recentHistory.map((entry) => entry.articleId));
