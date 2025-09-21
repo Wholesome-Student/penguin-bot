@@ -21,12 +21,12 @@ module.exports = {
   },
 
   data: new SlashCommandBuilder()
-    .setName("whatis")
-    .setDescription("登録されている用語の解説を表示します。")
+    .setName("delete_term")
+    .setDescription("登録されている用語を削除します。")
     .addStringOption((option) =>
       option
         .setName("term")
-        .setDescription("検索したい用語")
+        .setDescription("削除したい用語")
         .setRequired(true)
         .setAutocomplete(true),
     ),
@@ -48,10 +48,12 @@ module.exports = {
     }
 
     if (dictionary[term]) {
+      delete dictionary[term];
+      fs.writeFileSync(dictionaryPath, JSON.stringify(dictionary, null, 2), "utf8");
       const embed = new EmbedBuilder()
-        .setColor(0x0099ff)
-        .setTitle(`${term}`)
-        .setDescription(dictionary[term])
+        .setColor(0xef1010)
+        .setTitle("削除しました")
+        .setDescription(`用語「**${term}**」を辞書から削除しました。`)
         .setTimestamp();
       await interaction.reply({ embeds: [embed] });
     } else {
