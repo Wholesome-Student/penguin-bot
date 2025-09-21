@@ -6,7 +6,7 @@ const dictionaryPath = path.join(__dirname, "../dictionary.json");
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("addterm")
+    .setName("add_term")
     .setDescription("新しい用語を辞書に登録・更新します。")
     .addStringOption((option) =>
       option.setName("term").setDescription("登録する用語").setRequired(true),
