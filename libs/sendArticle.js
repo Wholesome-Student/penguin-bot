@@ -3,7 +3,7 @@ const Parser = require("rss-parser");
 const { tokenQiita } = require("../config.json");
 const { selectWeightedRandom } = require("./selectWeightedRandom");
 
-const ARTICLE_THREAD_ID = require("../channel-id.json").articleThread;
+const ARTICLE_CHANNEL_ID = require("../channel-id.json").articleChannel;
 const QIITA_POPULAR_FEED_URL = "https://qiita.com/popular-items/feed.atom";
 const QIITA_API_BASE_URL = "https://qiita.com/api/v2/items/";
 const ZENN_POPULAR_FEED_URL = "https://zenn.dev/feed";
@@ -113,15 +113,15 @@ async function writeHistory(history) {
 
 async function sendArticle(client) {
   console.log("記事の抽選と投稿処理を開始");
-  const [thread, qiitaArticles, zennArticles, fullHistory] = await Promise.all([
-    client.channels.fetch(ARTICLE_THREAD_ID),
+  const [channel, qiitaArticles, zennArticles, fullHistory] = await Promise.all([
+    client.channels.cache.get(ARTICLE_CHANNEL_ID),
     fetchQiitaArticles(tokenQiita),
     fetchZennArticles(),
     readHistory(),
   ]);
   const allArticles = [...qiitaArticles, ...zennArticles];
-  if (!thread?.isThread()) {
-    console.error("スレッド読み込みに失敗");
+  if (!channel) {
+    console.error("チャンネル読み込みに失敗");
     return;
   }
   const cutoffDate = new Date();
@@ -142,7 +142,7 @@ async function sendArticle(client) {
     return;
   }
   try {
-    await thread.send(selectedArticle.link);
+    await channel.send(selectedArticle.link);
     console.log(`『${selectedArticle.title}』 をスレッドに投稿`);
   } catch (error) {
     console.error("Discordへのメッセージ送信に失敗");
