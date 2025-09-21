@@ -18,25 +18,17 @@ module.exports = {
     const term = interaction.options.getString("term").toLowerCase(); // 大文字小文字を区別しないほうが良かったりするのかなーどうなのかなー
     const description = interaction.options.getString("description");
 
-    try {
-      // dictionary.jsonを読み込む
-      let dictionary = {};
-      if (fs.existsSync(dictionaryPath)) {
-        const data = fs.readFileSync(dictionaryPath, "utf8");
-        dictionary = JSON.parse(data);
-      }
-
-      // 新しい用語を追加または更新
-      dictionary[term] = description;
-      fs.writeFileSync(dictionaryPath, JSON.stringify(dictionary, null, 2), "utf8");
-
-      await interaction.reply(`用語「**${term}**」を「${description}」という説明文で登録・更新しました。`);
-    } catch (error) {
-      console.error("エラー:", error);
-      await interaction.reply({
-        content: "エラーが発生しました",
-        ephemeral: true,
-      });
+    // dictionary.jsonを読み込む
+    let dictionary = {};
+    if (fs.existsSync(dictionaryPath)) {
+    const data = fs.readFileSync(dictionaryPath, "utf8");
+    dictionary = JSON.parse(data);
     }
+
+    // 新しい用語を追加または更新
+    dictionary[term] = description;
+    fs.writeFileSync(dictionaryPath, JSON.stringify(dictionary, null, 2), "utf8");
+
+    await interaction.reply(`用語「**${term}**」を「${description}」という説明文で登録・更新しました。`);
   },
 };
