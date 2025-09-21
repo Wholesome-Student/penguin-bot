@@ -21,14 +21,16 @@ module.exports = {
     // dictionary.jsonを読み込む
     let dictionary = {};
     if (fs.existsSync(dictionaryPath)) {
-    const data = fs.readFileSync(dictionaryPath, "utf8");
-    dictionary = JSON.parse(data);
+      const data = fs.readFileSync(dictionaryPath, "utf8");
+      dictionary = JSON.parse(data);
     }
 
     // 新しい用語を追加または更新
     dictionary[term] = description;
     fs.writeFileSync(dictionaryPath, JSON.stringify(dictionary, null, 2), "utf8");
 
-    await interaction.reply(`用語「**${term}**」を「${description}」という説明文で登録・更新しました。`);
+    await interaction.reply(
+      `用語「**${term}**」を「${description}」という説明文で登録・更新しました。`,
+    );
   },
 };
