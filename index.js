@@ -58,7 +58,7 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
   }
 });
 
-cron.schedule("0 0 * * * *", async () => {
+cron.schedule("0 0 7.19 * * *", async () => {
   await sendArticle(client);
 });
 
